@@ -25,7 +25,7 @@
         <javafaker.version>1.0.2</javafaker.version>
 
         <!--launcher 配置-->
-        <main.verticle>com.levi.udemy.vertx_starter.MainVerticle</main.verticle>
+        <main.verticle>com.levi.gateway.MainVerticle</main.verticle>
         <launcher.class>io.vertx.core.Launcher</launcher.class>
     </properties>
 
