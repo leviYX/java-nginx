@@ -2,8 +2,6 @@ package com.levi.gateway;
 
 import com.levi.gateway.constant.NetConstant;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
-import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.*;
 import io.vertx.core.streams.Pipe;
