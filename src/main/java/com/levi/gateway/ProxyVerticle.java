@@ -17,7 +17,7 @@ public class ProxyVerticle extends AbstractVerticle {
     public void start()  {
         HttpServer server = vertx.createHttpServer();
         // 构建发送去目标服务的客户端
-        HttpClientOptions httpClientOptions = new HttpClientOptions().setDefaultHost("127.0.0.1").setDefaultPort(8080);
+        HttpClientOptions httpClientOptions = new HttpClientOptions().setDefaultHost(NetConstant.LOCALHOST).setDefaultPort(NetConstant.HTTP_PORT);
         HttpClient httpClient = vertx.createHttpClient(httpClientOptions);
 
         // 8081端口的请求走requestHandler处理器
