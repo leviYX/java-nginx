@@ -1,9 +1,13 @@
 package com.levi.gateway;
 
+import com.levi.gateway.constant.NetConstant;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProxyVerticle extends AbstractVerticle {
+    private static final Logger logger = LoggerFactory.getLogger(ProxyVerticle.class);
 
     @Override
     public void start()  {
@@ -11,11 +15,11 @@ public class ProxyVerticle extends AbstractVerticle {
 
         // 构建发送去目标服务的客户端
         HttpClientOptions httpClientOptions = new HttpClientOptions();
-        httpClientOptions.setDefaultHost("127.0.0.1");
-        httpClientOptions.setDefaultPort(8080);
+        httpClientOptions.setDefaultHost(NetConstant.LOCALHOST);
+        httpClientOptions.setDefaultPort(NetConstant.HTTP_PORT);
         HttpClient httpClient = vertx.createHttpClient(httpClientOptions);
 
-        // 9090端口的请求走requestHandler处理器
+        // 8081端口的请求走requestHandler处理器
         server.requestHandler(sourceRequest -> {
             // 构建返回对象，返回客户端
             HttpServerResponse response = sourceRequest.response();
@@ -38,9 +42,9 @@ public class ProxyVerticle extends AbstractVerticle {
                     });
                 }
             });
-        }).listen(9090,event -> { // 监听外部端口
+        }).listen(NetConstant.PROXY_PORT,event -> { // 监听外部端口
             if (event.succeeded()) {
-                System.out.println("Server started on port 9090");
+                logger.info("proxy server started on port {}",NetConstant.PROXY_PORT);
             }
         });
     }
