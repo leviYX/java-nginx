@@ -19,7 +19,6 @@ public class ServerVerticle extends AbstractVerticle {
 
         Router router = Router.router(vertx);
         router.get("/hello").handler(routingContext -> {
-            logger.info("get hello request proxy received");
             HttpServerResponse response = routingContext.response();
             HttpServerRequest request = routingContext.request();
             response.end("Hello World");
