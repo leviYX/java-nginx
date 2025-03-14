@@ -25,23 +25,40 @@ public class ProxyVerticle extends AbstractVerticle {
             HttpServerResponse response = sourceRequest.response();
             HttpMethod method = sourceRequest.method();
             String uri = sourceRequest.uri();
-            // 拿到代理请求，转发目标服务，注意这里request是构建请求对象，真实发送请求在下面的send中
-            httpClient.request(method, uri, createReq -> {
-                if (createReq.succeeded()) {
-                    HttpClientRequest request = createReq.result();
-                    // 代理发送数据去目标服务
-                    request.send(targetReps -> {
-                        // 拿到目标服务的响应，返回给客户端
-                        if (targetReps.succeeded()) {
-                            HttpClientResponse targetResponseResult = targetReps.result();
-                            targetResponseResult.bodyHandler(body -> {
-                                response.setStatusCode(targetResponseResult.statusCode());
-                                response.end(body.toString());
+            if (method == HttpMethod.GET) {
+                // 拿到代理请求，转发目标服务，注意这里request是构建请求对象，真实发送请求在下面的send中
+                httpClient.request(method, uri, createReq -> {
+                    if (createReq.succeeded()) {
+                        HttpClientRequest request = createReq.result();
+                        // 代理发送数据去目标服务
+                        request.send(targetReps -> {
+                            // 拿到目标服务的响应，返回给客户端
+                            if (targetReps.succeeded()) {
+                                HttpClientResponse targetResponseResult = targetReps.result();
+                                targetResponseResult.bodyHandler(body -> {
+                                    response.setStatusCode(targetResponseResult.statusCode());
+                                    response.end(body.toString());
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+            if (method == HttpMethod.POST) {
+                sourceRequest.body().onSuccess(resp -> {
+                    httpClient.request(method, uri, createReq -> {
+                        if (createReq.succeeded()) {
+                            HttpClientRequest request = createReq.result();
+                            request.send(resp).onSuccess(postSendReps -> {
+                                postSendReps.bodyHandler(body -> {
+                                    response.setStatusCode(postSendReps.statusCode());
+                                    response.end(body.toString());
+                                });
                             });
                         }
                     });
-                }
-            });
+                });
+            }
         }).listen(NetConstant.PROXY_PORT,event -> { // 监听外部端口
             if (event.succeeded()) {
                 logger.info("proxy server started on port {}",NetConstant.PROXY_PORT);
