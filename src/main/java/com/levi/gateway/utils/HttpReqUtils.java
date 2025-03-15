@@ -13,6 +13,13 @@ import java.util.concurrent.CompletableFuture;
 
 public class HttpReqUtils {
 
+    /**
+     * 同步发送GET请求
+     *
+     * @param url 请求地址
+     * @param httpVersion HTTP版本
+     * @return HttpResp 响应对象
+     */
     public static HttpResp getSync(String url, HttpClient.Version httpVersion) {
         HttpClient client = HttpClient.newBuilder().version(httpVersion).build();
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
@@ -26,12 +33,27 @@ public class HttpReqUtils {
         return null;
     }
 
+    /**
+     * 异步发送GET请求
+     *
+     * @param url
+     * @param httpVersion
+     * @return CompletableFuture<HttpResponse<String>> 异步future对象
+     */
     public static CompletableFuture<HttpResponse<String>> getASync(String url, HttpClient.Version httpVersion) {
         HttpClient client = HttpClient.newBuilder().version(httpVersion).build();
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
     }
 
+    /**
+     * 同步发送POST请求
+     *
+     * @param url 请求地址
+     * @param body 请求体
+     * @param httpVersion HTTP版本
+     * @return HttpResp 响应对象
+     */
     public static HttpResp postSync(String url, JSONObject body, HttpClient.Version httpVersion) {
         HttpClient client = HttpClient.newBuilder().version(httpVersion).build();
         HttpRequest request = HttpRequest.newBuilder()
@@ -49,6 +71,15 @@ public class HttpReqUtils {
         return null;
     }
 
+
+    /**
+     * 异步发送POST请求
+     *
+     * @param url 请求地址
+     * @param body 请求体
+     * @param httpVersion HTTP版本
+     * @return CompletableFuture<HttpResponse<String>> 异步future对象
+     */
     public static CompletableFuture<HttpResponse<String>>  postASync(String url, JSONObject body, HttpClient.Version httpVersion) {
         HttpClient client = HttpClient.newBuilder().version(httpVersion).build();
         HttpRequest request = HttpRequest.newBuilder()
