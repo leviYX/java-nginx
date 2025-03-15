@@ -28,7 +28,7 @@ vertx run gateway.jar -cp com.levi.gateway.ProxyVerticle
 ## 1、单元测试
 todo
 ## 2、http测试
-可以使用.http文件进行测试，也可以使用postman进行测试
+可以使用.http文件进行测试(recource目录下提供了.http测试文件)，也可以使用postman进行测试
 但是代码中提供了测试工具类，可以直接使用
 ```java
 com.levi.gateway.util.HttpClientUtil
