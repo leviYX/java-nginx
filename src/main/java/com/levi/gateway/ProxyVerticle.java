@@ -19,7 +19,7 @@ public class ProxyVerticle extends AbstractVerticle {
     @Override
     public void start()  {
 
-        // 读取配置文件
+        // 读取配置文件，获取代理端口和upStream列表
         var proxyPort = config().getInteger("port");
         var upStreamArray = config().getJsonArray("upStream");
         if (upStreamArray.isEmpty()) return;
