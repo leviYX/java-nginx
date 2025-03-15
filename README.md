@@ -23,3 +23,10 @@ vertx run gateway.jar -cp com.levi.gateway.ProxyVerticle
   ]
 }
 ```
+
+# 三、测试方式
+可以使用.http文件进行测试，也可以使用postman进行测试
+但是代码中提供了测试工具类，可以直接使用
+```java
+com.levi.gateway.util.HttpClientUtil
+```
