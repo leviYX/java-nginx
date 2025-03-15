@@ -41,6 +41,7 @@ recource目录下提供了jmx文件，可以使用jmeter进行测试
 
 # 四、监控
 可以通过gclog进行监控,但是需要在启动时添加JVM参数
+
 recource目录下提供了default.jfc文件，可以使用JFR+JMC进行监控,但是需要在启动时添加JVM参数
 ```shell
 -Xmx2048m 
@@ -50,5 +51,5 @@ recource目录下提供了default.jfc文件，可以使用JFR+JMC进行监控,�
 -XX:+ZGenerational
 -XX:MetaspaceSize=640m 
 -XX:MaxMetaspaceSize=640m
- -Xlog:safepoint,classhisto*=trace,age*,gc*=info:file=日志路径/gc-%t.log:time,tid,tags:filecount=5,filesize=50m
+-Xlog:safepoint,classhisto*=trace,age*,gc*=info:file=日志路径/gc-%t.log:time,tid,tags:filecount=5,filesize=50m
 ```
