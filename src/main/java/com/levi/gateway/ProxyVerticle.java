@@ -1,13 +1,11 @@
 package com.levi.gateway;
 
-import com.levi.gateway.constant.NetConstant;
 import com.levi.gateway.domin.UpStream;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.*;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.Pipe;
-import io.vertx.ext.web.handler.BodyHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +19,7 @@ public class ProxyVerticle extends AbstractVerticle {
     @Override
     public void start()  {
 
+        // 读取配置文件
         var proxyPort = config().getInteger("port");
         var upStreamArray = config().getJsonArray("upStream");
         if (upStreamArray.isEmpty()) return;
