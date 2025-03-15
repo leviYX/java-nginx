@@ -1,48 +1,79 @@
 package com.levi.gateway;
 
 import com.levi.gateway.constant.NetConstant;
+import com.levi.gateway.domin.UpStream;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.*;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.streams.Pipe;
+import io.vertx.ext.web.handler.BodyHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ProxyVerticle extends AbstractVerticle {
+
     private static final Logger logger = LoggerFactory.getLogger(ProxyVerticle.class);
 
     @Override
     public void start()  {
+
+        var proxyPort = config().getInteger("port");
+        var upStreamArray = config().getJsonArray("upStream");
+        if (upStreamArray.isEmpty()) return;
+        List<UpStream> upStreamList = new ArrayList<>();
+        upStreamArray.forEach(upStream -> {upStreamList.add(new UpStream((JsonObject) upStream,vertx));});
+
         HttpServer server = vertx.createHttpServer();
-        // 构建发送去目标服务的客户端
-        HttpClientOptions httpClientOptions = new HttpClientOptions().setDefaultHost(NetConstant.LOCALHOST).setDefaultPort(NetConstant.HTTP_PORT);
-        HttpClient httpClient = vertx.createHttpClient(httpClientOptions);
 
         // 8081端口的请求走requestHandler处理器
-        server.requestHandler(sourceRequest -> {
-            // 构建pipe，执行pause();
-            Pipe<Buffer> pipe = sourceRequest.pipe();
-            // 构建返回对象，返回客户端
-            HttpServerResponse response = sourceRequest.response();
-           httpClient.request(sourceRequest.method(), sourceRequest.uri())
-                   .onSuccess(targetRequest -> {
-                       sourceRequest.headers().forEach(header -> {
-                           if ("Content-Type".equals(header.getKey())) {
-                               targetRequest.putHeader(header.getKey(), header.getValue());
-                           }
-                       });
-                       // 代理服务发去目标服务
-                       pipe.to(targetRequest);
-                       // 代理服务返回客户端
-                       targetRequest.response().onSuccess(targetResponse -> {
-                           targetResponse.headers().forEach(header -> response.putHeader(header.getKey(), header.getValue()));
-                           targetResponse.pipeTo(response);
-                       });
-                   })
-                   .onFailure(Throwable::printStackTrace);
-        }).listen(NetConstant.PROXY_PORT,event -> { // 监听外部端口
+        server.requestHandler(reqUpstream -> {
+            for (UpStream upStream : upStreamList) {
+                logger.info("upStream path:{} url:{}",upStream.getPath(),upStream.getUrl());
+                // 遍历所有的upStream，判断请求的路径是否匹配
+                logger.info("************** upstream is :{},reqUri :{},reqPath :{}",upStream.toString(),reqUpstream.path(),reqUpstream.uri());
+                if (reqUpstream.path().startsWith(upStream.getPrefix())) {
+                    String targetPath = reqUpstream.path().replace(upStream.getPrefix(), upStream.getPath());
+                    // 构建pipe，执行pause();
+                    Pipe<Buffer> pipe = reqUpstream.pipe();
+                    // 构建返回对象，返回客户端
+                    HttpServerResponse response = reqUpstream.response();
+                    upStream.getHttpClient().request(reqUpstream.method(),targetPath)
+                            .onSuccess(targetRequest -> {
+                                reqUpstream.headers().forEach(header -> {
+                                    if (header.getKey().equalsIgnoreCase("content-length")) {
+                                        targetRequest.putHeader(header.getKey(), header.getValue());
+                                    }
+                                    if (header.getKey().equalsIgnoreCase("transfer-encoding")) {
+                                        response.putHeader(header.getKey(), header.getValue());
+                                    }
+                                });
+                                // 代理服务发去目标服务
+                                pipe.to(targetRequest);
+                                // 代理服务返回客户端
+                                targetRequest.response().onSuccess(targetResponse -> {
+                                    targetResponse.headers().forEach(header -> {
+                                        if (header.getKey().equalsIgnoreCase("content-length")) {
+                                            response.putHeader(header.getKey(), header.getValue());
+                                        }
+                                        if (header.getKey().equalsIgnoreCase("transfer-encoding")) {
+                                            response.putHeader(header.getKey(), header.getValue());
+                                        }
+                                    });
+                                    targetResponse.pipeTo(response);
+                                });
+                            })
+                            .onFailure(Throwable::printStackTrace);
+                    break;
+                }
+            }
+        }).listen(proxyPort,event -> { // 监听外部端口
             if (event.succeeded()) {
-                logger.info("proxy server started on port {}",NetConstant.PROXY_PORT);
+                vertx.deployVerticle(new ServerVerticle());
+                logger.info("proxy server started on port {}",proxyPort);
             }
         });
     }

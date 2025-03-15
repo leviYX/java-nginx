@@ -1,0 +1,7 @@
+
+### proxy
+POST http://localhost:9090/a/hello
+Content-Type: application/json
+{
+    "name": "John"
+}
