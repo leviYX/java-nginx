@@ -1,3 +1,7 @@
+# 环境要求
+jdk21+
+
+
 # 一、启动方式
 ## 1、Launcher方式启动(推荐)
 项目参数添加 指定配置文件路径 以及 启动类名
@@ -35,3 +39,17 @@ com.levi.gateway.util.HttpClientUtil
 ```
 ## 3、压力测试
 recource目录下提供了jmx文件，可以使用jmeter进行测试
+
+# 四、监控
+可以通过gclog进行监控,但是需要在启动时添加JVM参数
+recource目录下提供了default.jfc文件，可以使用JFR+JMC进行监控,但是需要在启动时添加JVM参数
+```shell
+-Xmx2048m 
+-Xms2048m
+-XX:StartFlightRecording=disk=true,maxsize=5000m,maxage=2d,settings=./default.jfc -XX:FlightRecorderOptions=maxchunksize=128m,repository=./,stackdepth=256
+-XX:+UseZGC
+-XX:+ZGenerational
+-XX:MetaspaceSize=640m 
+-XX:MaxMetaspaceSize=640m
+ -Xlog:safepoint,classhisto*=trace,age*,gc*=info:file=日志路径/gc-%t.log:time,tid,tags:filecount=5,filesize=50m
+```
