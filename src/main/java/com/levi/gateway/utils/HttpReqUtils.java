@@ -9,6 +9,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.concurrent.CompletableFuture;
 
 public class HttpReqUtils {
 
@@ -23,6 +24,12 @@ public class HttpReqUtils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static CompletableFuture<HttpResponse<String>> getASync(String url, HttpClient.Version httpVersion) {
+        HttpClient client = HttpClient.newBuilder().version(httpVersion).build();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
     }
 
     public static HttpResp postSync(String url, JSONObject body, HttpClient.Version httpVersion) {
@@ -40,5 +47,15 @@ public class HttpReqUtils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static CompletableFuture<HttpResponse<String>>  postASync(String url, JSONObject body, HttpClient.Version httpVersion) {
+        HttpClient client = HttpClient.newBuilder().version(httpVersion).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body.toJSONString()))
+                .build();
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
     }
 }
