@@ -31,9 +31,7 @@ public class ProxyVerticle extends AbstractVerticle {
         // 8081端口的请求走requestHandler处理器
         server.requestHandler(reqUpstream -> {
             for (UpStream upStream : upStreamList) {
-                logger.info("upStream path:{} url:{}",upStream.getPath(),upStream.getUrl());
                 // 遍历所有的upStream，判断请求的路径是否匹配
-                logger.info("************** upstream is :{},reqUri :{},reqPath :{}",upStream.toString(),reqUpstream.path(),reqUpstream.uri());
                 if (reqUpstream.path().startsWith(upStream.getPrefix())) {
                     String targetPath = reqUpstream.path().replace(upStream.getPrefix(), upStream.getPath());
                     // 构建pipe，执行pause();
