@@ -9,9 +9,16 @@ import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class HttpReqUtils {
+
+    private static final String TEST_HTTP_URL = "http://localhost:9090/a/hello";
+
+    public static void main(String[] args) {
+        HttpReqUtils.postSync(TEST_HTTP_URL, new JSONObject(Map.of("name", "java")),HttpClient.Version.HTTP_2);
+    }
 
     /**
      * 同步发送GET请求
