@@ -3,7 +3,6 @@ package com.levi.gateway;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.ServerWebSocket;
 
 import java.util.Date;
