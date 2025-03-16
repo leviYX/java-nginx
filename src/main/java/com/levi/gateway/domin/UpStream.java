@@ -6,12 +6,14 @@ import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.json.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
 @Getter
 @Setter
+@ToString
 public class UpStream {
 
     private String path;
@@ -35,14 +37,5 @@ public class UpStream {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public String toString() {
-        return "UpStream{" +
-                "path='" + path + '\'' +
-                ", url='" + url + '\'' +
-                ", prefix='" + prefix + '\'' +
-                '}';
     }
 }

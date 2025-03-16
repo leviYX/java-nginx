@@ -2,6 +2,7 @@ package com.levi.gateway;
 
 
 import com.alibaba.fastjson2.JSONObject;
+import com.levi.gateway.utils.FileUtils;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -15,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+import java.io.File;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @ExtendWith(VertxExtension.class)
@@ -25,20 +28,22 @@ public class VerticleTest {
     @BeforeEach
     void setUp(Vertx vertx, VertxTestContext testContext) {
         //vertx.deployVerticle(new ServerVerticle(), testContext.succeedingThenComplete());
-
-        JSONObject configObj = JSONObject.parseObject("{\n" +
-                "  \"port\": 9090,\n" +
-                "  \"upStream\":[\n" +
-                "    {\n" +
-                "      \"prefix\":\"/a\",\n" +
-                "      \"url\": \"http://127.0.0.1:8080\"\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}");
+        JSONObject configObj = FileUtils.file2Json("/Users/levi/develop/project/netty/vertx/gateway/gateway/src/main/resources/config.json");
         JsonObject config = new JsonObject(configObj);
         DeploymentOptions deploymentOptions = new DeploymentOptions().setConfig(config);
 
         vertx.deployVerticle(new ProxyVerticle(), deploymentOptions,testContext.succeedingThenComplete());
+    }
+
+    @Test
+    void testStaticApi(Vertx vertx, VertxTestContext testContext) {
+        WebClient.create(vertx)
+                .get(9090, "localhost", "/web123")
+                .send()
+                .onSuccess(response -> {
+                    LOG.info("静态文件返回：{}", response.bodyAsString());
+                    testContext.completeNow();
+                }).onFailure(testContext::failNow);
     }
 
     @Test
