@@ -27,7 +27,7 @@
     var socket;
     const serverResponse = document.getElementById("serverResponse");
     if (window.WebSocket) {
-        socket = new WebSocket("ws://localhost:8080/myapp");
+        socket = new WebSocket("ws://localhost:8080/myapi");
         socket.onmessage = function (event) {
             console.log("接收到的websocket数据为: " + event.data);
            // 检查消息类型
@@ -56,10 +56,14 @@
     }
 
     function send(message) {
+        console.log("Sending message: " + message);
         if (!window.WebSocket) {
             return;
         }
+        console.log("**************************** " );
+        console.log("**************************** " );
         if (socket.readyState == WebSocket.OPEN) {
+            console.log("The socket is open.");
             socket.send(message);
         } else {
            console.log("The socket is not open.");

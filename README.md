@@ -60,3 +60,4 @@ recource目录下提供了default.jfc文件，可以使用JFR+JMC进行监控,�
 com.levi.gateway.websocket.WebSocketHandler
 ```
 参考[官方websocket实现案例][https://github.com/vert-x3/vertx-examples/blob/4.x/core-examples/src/main/java/io/vertx/example/core/http/websockets/Server.java]
+以及官方文档：https://vertx-china.github.io/docs/vertx-core/java/#_writing_http_servers_and_clients
