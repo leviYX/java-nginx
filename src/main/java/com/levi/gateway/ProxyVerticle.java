@@ -3,7 +3,6 @@ package com.levi.gateway;
 import com.levi.gateway.domin.Frontend;
 import com.levi.gateway.domin.UpStream;
 import com.levi.gateway.enums.HttpStatusCode;
-import io.netty.handler.codec.http.HttpStatusClass;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.*;
@@ -16,8 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ProxyVerticle extends AbstractVerticle {
 
