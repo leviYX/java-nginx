@@ -1,0 +1,71 @@
+<!--
+  ~ Copyright 2011-2012 the original author or authors.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<html>
+<head><title>Web Socket Test</title></head>
+<body>
+<form onsubmit="return false;">
+    <input type="text" name="message" value="Hello, World!"/>
+    <input type="button" value="Send Web Socket Data" onclick="send(this.form.message.value)"/>
+    <p>Server Response: <span id="serverResponse"></span></p>
+
+</form>
+<script>
+    var socket;
+    const serverResponse = document.getElementById("serverResponse");
+    if (window.WebSocket) {
+        socket = new WebSocket("ws://localhost:8080/myapp");
+        socket.onmessage = function (event) {
+            console.log("Received data from websocket: " + event.data);
+           // 检查消息类型
+            if (event.data instanceof Blob) {
+                // 如果是 Blob，将其转换为文本
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const text = e.target.result;
+                    console.log("Received text:", text);
+                    serverResponse.textContent = text;
+                };
+                reader.readAsText(event.data); // 读取 Blob 为文本
+            } else {
+                // 如果是普通文本，直接显示
+                serverResponse.textContent = event.data;
+            }
+        }
+        socket.onopen = function (event) {
+            console.log("Web Socket opened!");
+        };
+        socket.onclose = function (event) {
+            console.log("Web Socket closed.");
+        };
+    } else {
+        alert("Your browser does not support Websockets. (Use Chrome)");
+    }
+
+    function send(message) {
+        if (!window.WebSocket) {
+            return;
+        }
+        if (socket.readyState == WebSocket.OPEN) {
+            socket.send(message);
+        } else {
+            //alert("The socket is not open.");
+        }
+    }
+</script>
+
+</body>
+</html>
