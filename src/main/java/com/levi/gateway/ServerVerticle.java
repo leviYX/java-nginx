@@ -30,6 +30,7 @@ public class ServerVerticle extends AbstractVerticle {
             HttpServerResponse response = routingContext.response();
             HttpServerRequest request = routingContext.request();
             response.end("Hello World");
+            logger.info("请求参数：{}", request.params());
         }).failureHandler(error -> logger.error("hello get 返回失败 {}", error));
 
         router.post("/hello")

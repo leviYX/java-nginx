@@ -5,6 +5,7 @@ jdk21+
 ## 1、Launcher方式启动(推荐)
 项目参数添加 指定配置文件路径 以及 启动类名
 ```shell
+run com.levi.gateway.ProxyVerticle -conf /Users/levi/develop/project/netty/vertx/gateway/gateway/src/main/resources/config.json
 java -jar gateway.jar -conf /Users/levi/develop/project/netty/vertx/gateway/gateway/src/main/resources/config.json -cp com.levi.gateway.ProxyVerticle
 ```
 ## 2、vertx方式启动
