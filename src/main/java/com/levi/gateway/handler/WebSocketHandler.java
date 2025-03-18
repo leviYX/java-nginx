@@ -7,7 +7,6 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.ServerWebSocket;
-import io.vertx.core.streams.Pipe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +26,6 @@ public class WebSocketHandler implements Handler<ServerWebSocket> {
     @Override
     public void handle(ServerWebSocket webSocket) {
         String wsPath = webSocket.path();
-        String textHandlerID = webSocket.textHandlerID();
         // 处理代理的接口请求
         for (UpStream upStream : upStreamList) {
             String targetPath = wsPath.replaceFirst(upStream.getPrefix(), upStream.getPath());
