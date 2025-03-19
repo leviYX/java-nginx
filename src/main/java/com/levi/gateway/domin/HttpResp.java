@@ -1,7 +1,5 @@
 package com.levi.gateway.domin;
 
-
-
 import java.net.http.HttpHeaders;
 
 public class HttpResp{

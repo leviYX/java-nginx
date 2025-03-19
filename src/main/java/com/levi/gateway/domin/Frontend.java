@@ -2,8 +2,6 @@ package com.levi.gateway.domin;
 
 import io.vertx.core.json.JsonObject;
 
-
-
 public class Frontend {
 
     private String prefix;
