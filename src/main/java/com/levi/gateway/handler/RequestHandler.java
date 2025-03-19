@@ -2,17 +2,14 @@ package com.levi.gateway.handler;
 
 import com.levi.gateway.domin.Frontend;
 import com.levi.gateway.domin.UpStream;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
-import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.streams.Pipe;
 import io.vertx.ext.web.Router;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import java.util.List;
 
@@ -24,11 +21,9 @@ import java.util.List;
  */
 public class RequestHandler implements Handler<HttpServerRequest> {
 
-    private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
-
-    List<UpStream> upStreamList;
-    List<Frontend> frontendList ;
-    Router router;
+    private List<UpStream> upStreamList;
+    private List<Frontend> frontendList ;
+    private Router router;
 
     public RequestHandler(List<UpStream> upStreamList, List<Frontend> frontendList,Router router) {
         this.upStreamList = upStreamList;
@@ -39,7 +34,7 @@ public class RequestHandler implements Handler<HttpServerRequest> {
     @Override
     public void handle(HttpServerRequest reqUpstream) {
 
-        // 处理静态文件
+        // 处理静态文件 todo 可以优化循环遍历，改为map 时间复杂度O(1)
         for (Frontend frontend : frontendList) {
             if (reqUpstream.path().startsWith(frontend.getPrefix())) {
                 router.handle(reqUpstream);
@@ -52,26 +47,16 @@ public class RequestHandler implements Handler<HttpServerRequest> {
             String targetPath = reqUpstream.path().replace(upStream.getPrefix(), upStream.getPath());
             // 遍历所有的upStream，判断请求的路径是否匹配
             if (reqUpstream.path().startsWith(upStream.getPrefix())) {
-                String upgrade = reqUpstream.getHeader("Upgrade");
+                // 用来判断请求头中是不是包含Upgrade：websocket ，如果包含，说明是websocket协议，http协议需要升级到websocket协议
+                // String upgrade = reqUpstream.getHeader("Upgrade");
+                // if (upgrade != null && upgrade.equalsIgnoreCase("websocket")) {
+                //     // 处理websocket代理请求
+                //     WebSocketHandler webSocketHandler = new WebSocketHandler(upStreamList);
                 // 构建pipe，执行pause();
                 Pipe<Buffer> pipe = reqUpstream.pipe();
                 // 构建返回对象，返回客户端
                 HttpServerResponse response = reqUpstream.response();
                 HttpClient upStreamHttpClient = upStream.getHttpClient();
-
-                // 处理websocket请求
-                if (upgrade != null && upgrade.equalsIgnoreCase("websocket")) {
-                    Future<ServerWebSocket> webSocket = reqUpstream.toWebSocket();
-                    webSocket
-                            .onSuccess(ws -> {
-                                upStreamHttpClient.webSocket(targetPath).onSuccess(wsClient -> {
-                                    ws.frameHandler(wsClient::writeFrame);
-                                    wsClient.frameHandler(ws::writeFrame);
-                                });
-                            })
-                            .onFailure(err -> {logger.error("websocket error {}",err);});
-                    return;
-                }
 
                 // 处理普通请求
                 upStreamHttpClient.request(reqUpstream.method(),targetPath)
