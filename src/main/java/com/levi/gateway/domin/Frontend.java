@@ -1,13 +1,9 @@
 package com.levi.gateway.domin;
 
 import io.vertx.core.json.JsonObject;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
-@Getter
-@Setter
-@ToString
+
+
 public class Frontend {
 
     private String prefix;
@@ -20,4 +16,27 @@ public class Frontend {
         this.reroute = jsonObject.getString("reroute");
     }
 
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
+
+    public String getDir() {
+        return dir;
+    }
+
+    public void setDir(String dir) {
+        this.dir = dir;
+    }
+
+    public String getReroute() {
+        return reroute;
+    }
+
+    public void setReroute(String reroute) {
+        this.reroute = reroute;
+    }
 }

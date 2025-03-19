@@ -33,7 +33,11 @@ public class HttpReqUtils {
         HttpResponse<String> response;
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            return HttpResp.builder().body(response.body()).statusCode(response.statusCode()).headers( response.headers()).build();
+            var HttpResp = new HttpResp();
+            HttpResp.setBody(response.body());
+            HttpResp.setStatusCode(response.statusCode());
+            HttpResp.setHeaders(response.headers());
+            return HttpResp;
         }catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -71,7 +75,11 @@ public class HttpReqUtils {
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             HttpHeaders headers = response.headers();
-            return HttpResp.builder().body(response.body()).statusCode(response.statusCode()).headers(headers).build();
+            HttpResp resp = new HttpResp();
+            resp.setBody(response.body());
+            resp.setHeaders(headers);
+            resp.setStatusCode(response.statusCode());
+            return resp;
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
