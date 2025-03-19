@@ -16,7 +16,9 @@ public class MainVerticle extends AbstractVerticle {
         Vertx vertx = Vertx.vertx();
         vertx.deployVerticle(new MainVerticle());
         vertx.deployVerticle(new ProxyVerticle());
-        vertx.deployVerticle(ServerVerticle.class, new DeploymentOptions().setInstances(Runtime.getRuntime().availableProcessors()).setWorker(true));
+        vertx.deployVerticle(ServerVerticle.class, new DeploymentOptions()
+                .setInstances(Runtime.getRuntime().availableProcessors())
+                .setWorker(true));
     }
 
     @Override
